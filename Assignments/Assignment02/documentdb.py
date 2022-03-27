@@ -7,16 +7,17 @@
 # 
 # 
 
-# In[12]:
+# In[32]:
 
 
 from pathlib import Path 
 import json
 import os
 from tinydb import TinyDB
+import pickle
 
 
-# In[14]:
+# In[33]:
 
 
 def _load_json(json_path): 
@@ -24,7 +25,7 @@ def _load_json(json_path):
         return json.load(f)
 
 
-# In[29]:
+# In[51]:
 
 
 
@@ -43,6 +44,13 @@ class DocumentDB(object):
         self._visit_lookup = _load_json(visited_json)
         self._site_lookup = _load_json(sites_json)
         self._measurements_lookup = _load_json(measurements_json)
+        
+        # create pickle
+        self.CreatePickle(self._site_lookup,'site');
+        self.CreatePickle(self._person_lookup,'person');
+        self.CreatePickle(self._visit_lookup,'visit');
+        self.CreatePickle(self._measurements_lookup,'measurements');
+        
         self._load_db()
         
     def _get_site(self, site_id):
@@ -52,6 +60,7 @@ class DocumentDB(object):
         measurements = []
         for values in self._measurements_lookup.values():
             measurements.extend([value for value in values if str(['person_id']) == str(person_id)])
+        
         return measurements
     
     def _get_visit(self, visit_id):
@@ -59,11 +68,13 @@ class DocumentDB(object):
         site_id = str(visit['site_id'])
         site = self._site_lookup(site_id)
         visit['site'] = site
+      
         return visit
     
     def _load_db(self):
         self._db = TinyDB(self._db_path)
         persons = self._person_lookup.items()
+        
         for person_id, record in persons:
             measurements = self._get_measurements(person_id)
             visit_ids = set([measurement['visit_id'] for measurement in measurements])
@@ -77,9 +88,18 @@ class DocumentDB(object):
                 visits.append(visit)
             record['visits'] = visits
             self._db.insert(record)
+            
+    def CreatePickle(self,jsonObj,filename):
+        # Pickling the object
+        with open(filename +'.pickle', 'wb') as f:
+            pickle.dump(jsonObj, f, pickle.HIGHEST_PROTOCOL)
+ 
+        
+    
+    
 
 
-# In[30]:
+# In[52]:
 
 
 db_path = results_dir.joinpath('patient-info.json')
