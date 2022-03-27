@@ -25,7 +25,7 @@ def _load_json(json_path):
         return json.load(f)
 
 
-# In[51]:
+# In[53]:
 
 
 
@@ -38,6 +38,11 @@ class DocumentDB(object):
         sites_json = kv_data_dir.joinpath('sites.json')
         measurements_json = kv_data_dir.joinpath('measurements.json')
         
+        people_pickle = kv_data_dir.joinpath('people.pickle')
+        visited_pickle = kv_data_dir.joinpath('visited.pickle')
+        sites_pickle = kv_data_dir.joinpath('sites.pickle')
+        measurements_pickle = kv_data_dir.joinpath('measurements.pickle')        
+        
         self._db_path = Path(db_path)
         self._db = None
         self._person_lookup = _load_json(people_json)
@@ -46,10 +51,10 @@ class DocumentDB(object):
         self._measurements_lookup = _load_json(measurements_json)
         
         # create pickle
-        self.CreatePickle(self._site_lookup,'site');
-        self.CreatePickle(self._person_lookup,'person');
-        self.CreatePickle(self._visit_lookup,'visit');
-        self.CreatePickle(self._measurements_lookup,'measurements');
+        self.CreatePickle(self._site_lookup,sites_pickle);
+        self.CreatePickle(self._person_lookup,people_pickle);
+        self.CreatePickle(self._visit_lookup,visited_pickle);
+        self.CreatePickle(self._measurements_lookup,measurements_pickle);
         
         self._load_db()
         
@@ -91,7 +96,7 @@ class DocumentDB(object):
             
     def CreatePickle(self,jsonObj,filename):
         # Pickling the object
-        with open(filename +'.pickle', 'wb') as f:
+        with open(filename , 'wb') as f:
             pickle.dump(jsonObj, f, pickle.HIGHEST_PROTOCOL)
  
         
@@ -99,7 +104,7 @@ class DocumentDB(object):
     
 
 
-# In[52]:
+# In[54]:
 
 
 db_path = results_dir.joinpath('patient-info.json')
