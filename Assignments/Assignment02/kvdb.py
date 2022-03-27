@@ -7,7 +7,7 @@
 # 
 # 
 
-# In[7]:
+# In[4]:
 
 
 import json
@@ -38,13 +38,13 @@ sites_json = kv_data_dir.joinpath('sites.json')
 measurements_json = kv_data_dir.joinpath('measurements.json')
 
 
-# In[8]:
+# In[5]:
 
 
 current_dir
 
 
-# In[9]:
+# In[6]:
 
 
 class KVDB(object):
@@ -69,7 +69,7 @@ class KVDB(object):
             json.dump(self._db, f, indent=2)
 
 
-# In[10]:
+# In[7]:
 
 
 def create_sites_kvdb():
@@ -110,13 +110,27 @@ def create_measurements_kvdb():
     db.save()
 
 
-# In[11]:
+# In[8]:
 
 
 create_sites_kvdb()
 create_people_kvdb()
 create_visits_kvdb()
 create_measurements_kvdb()
+
+
+# In[9]:
+
+
+kvdb_path = 'visits.json'
+kvdb = KVDB(kvdb_path)
+key = (619, 'DR-1')
+value = dict(visit_id=619,
+   site_id='DR-1',
+   visit_date='1927-02-08'
+)
+kvdb.set_value(key, value)
+retrieved_value = kvdb.get_value(key)
 
 
 # In[ ]:
